@@ -6,7 +6,7 @@ Repositorio público de documentación para ACIv2 API - Sistema de integración 
 
 Sitio web público con documentación completa de los endpoints:
 
-**[https://weirdolabs.github.io/acicloud-public/](https://weirdolabs.github.io/acicloud-public/)**
+**[https://aghabrego.github.io/acicloud-public/](https://aghabrego.github.io/acicloud-public/)**
 
 > Esta documentación está disponible públicamente en GitHub Pages
 
@@ -57,7 +57,14 @@ Para configurar:
 
 ## Fuente de las APIs
 
-Esta es documentación pública de la API ACIv2. El código fuente de la API se encuentra en un repositorio privado separado.
+Esta es documentación pública de la API ACIv2. El código fuente de la API se encuentra en:
+
+- **Repositorio privado:** `/home/weirdolabs/code/api-aci/aciv2/`
+- Incluye implementaciones para QuickBooks, Zoho, Xero, Shopify, WooCommerce y Dentalink
+- Sistema de colas con Redis y Bee-Queue para procesamiento asíncrono
+- Integración con Firebase Functions para deployment
+
+Los endpoints documentados en este sitio reflejan la implementación real de la API.
 
 ## Contribuciones
 
