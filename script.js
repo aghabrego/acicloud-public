@@ -12,9 +12,27 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.remove('active');
         });
 
-        const targetSection = document.getElementById(targetId);
-        if (targetSection) {
+        let targetSection = document.getElementById(targetId);
+        
+        // Si no es una sección completa, podría ser un subsección (h2, h3)
+        if (!targetSection || !targetSection.classList.contains('section')) {
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                // Encontrar la sección padre
+                targetSection = targetElement.closest('.section');
+                
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    
+                    // Hacer scroll al elemento específico después de mostrar la sección
+                    setTimeout(() => {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+        } else {
             targetSection.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         const activeLink = document.querySelector(`a[href="#${targetId}"]`);
@@ -26,8 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 parentSubmenu.classList.add('active');
             }
         }
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     navLinks.forEach(link => {
