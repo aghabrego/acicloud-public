@@ -27,6 +27,7 @@
                     <li><a href="#qb-invoices">Facturas</a></li>
                     <li><a href="#qb-webhooks">Webhooks</a></li>
                     <li><a href="#qb-maintenance">Mantenimiento</a></li>
+                    <li><a href="#qb-admin">Administración</a></li>
                 </ul>
             </li>
             <li>
@@ -56,9 +57,13 @@
             <li><a href="#woocommerce">WooCommerce</a></li>
             <li><a href="#dentalink">Dentalink</a></li>
             <li><a href="#utilidades">Utilidades y Catálogos</a></li>
-            <li><a href="#administracion">Administración</a></li>
-            <li><a href="#errores">Códigos de Error</a></li>
-            <li><a href="#mejores-practicas">Mejores Prácticas</a></li>
+            <li>
+                <a href="#mejores-practicas">Mejores Prácticas</a>
+                <ul class="submenu">
+                    <li><a href="#workflows">Workflows</a></li>
+                    <li><a href="#errores">Códigos de Error</a></li>
+                </ul>
+            </li>
         </ul>
     </nav>
 
@@ -429,9 +434,16 @@
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section id="zoho" class="section">
+            <h2 id="qb-admin">Administración</h2>
+            <p>Endpoints para gestión avanzada de clientes, facturas y sincronización con QuickBooks.</p>
+
+            <div class="info-box warning">
+                <h4>Endpoints Especializados</h4>
+                <p>Estos endpoints están diseñados para operaciones administrativas y correcciones de datos. Usan reintentos automáticos y manejo robusto de errores.</p>
+            </div>
+
+            <h3>Gestión de Clientes</h3>
             <h1>Zoho API</h1>
             <p>Endpoints para integración con Zoho Books y Zoho CRM.</p>
 
@@ -1667,10 +1679,7 @@ logo: [file]</code></pre>
                     </ul>
                 </div>
             </div>
-        </section>
-
-        <section id="administracion" class="section">
-            <h1>Administración QuickBooks</h1>
+            <h2 id="qb-admin">Administración</h2>
             <p>Endpoints para gestión avanzada de clientes, facturas y sincronización con QuickBooks.</p>
 
             <div class="info-box warning">
@@ -1849,10 +1858,7 @@ logo: [file]</code></pre>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <section id="errores" class="section">
-            <h1>Códigos de Respuesta y Errores</h1>
+            <h2 id="errores">Códigos de Respuesta y Errores</h2>
             
             <h2>Códigos HTTP</h2>
             <div class="info-box info">
@@ -2019,7 +2025,7 @@ logo: [file]</code></pre>
         <section id="mejores-practicas" class="section">
             <h1>Mejores Prácticas</h1>
 
-            <h2>Workflows Comunes</h2>
+            <h2 id="workflows">Workflows Comunes</h2>
 
             <h3>1. Configuración Inicial de Integración</h3>
             <div class="code-block">
