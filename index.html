@@ -120,7 +120,7 @@
 
             <h2>Base URL</h2>
             <div class="code-block">
-                <code>https://us-central1-[proyecto].cloudfunctions.net/aciv2</code>
+                <code>https://us-central1-zoho-books-edocs-integracion.cloudfunctions.net/aciv2</code>
             </div>
         </section>
 
@@ -1557,7 +1557,7 @@ else
     headers.put("Authorization",AuthorizationBasic);
     requestMap = Map();
     requestMap.put("organization_id","your_org_id");
-    setInvoice = postUrl("https://us-central1-[proyecto].cloudfunctions.net/aciv2/invoices/" + invoiceId,requestMap,headers);
+    setInvoice = postUrl("https://us-central1-zoho-books-edocs-integracion.cloudfunctions.net/aciv2/invoices/" + invoiceId,requestMap,headers);
     if(setInvoice.get("success") == false)
     {
         return {"code":2830,"message":setInvoice.get("message")};
@@ -1593,7 +1593,7 @@ else
     headers.put("Authorization",AuthorizationBasic);
     requestMap = Map();
     requestMap.put("organization_id","your_org_id");
-    setCreditNote = postUrl("https://us-central1-[proyecto].cloudfunctions.net/aciv2/credit_notes/" + creditnoteId,requestMap,headers);
+    setCreditNote = postUrl("https://us-central1-zoho-books-edocs-integracion.cloudfunctions.net/aciv2/credit_notes/" + creditnoteId,requestMap,headers);
     if(setCreditNote.get("success") == false)
     {
         return {"code":2830,"message":setCreditNote.get("message")};
