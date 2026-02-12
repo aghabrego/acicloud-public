@@ -19,6 +19,7 @@
 
         <ul class="nav-menu">
             <li><a href="#introduccion" class="active">Introducción</a></li>
+            <li><a href="#arquitectura">Arquitectura del Sistema</a></li>
             <li><a href="#autenticacion">Autenticación</a></li>
             <li>
                 <a href="#quickbooks">QuickBooks</a>
@@ -118,6 +119,276 @@
             <h2>Base URL</h2>
             <div class="code-block">
                 <code>https://us-central1-[proyecto].cloudfunctions.net/aciv2</code>
+            </div>
+        </section>
+
+        <section id="arquitectura" class="section">
+            <h1>Arquitectura del Sistema</h1>
+            <p class="lead">Infraestructura y componentes técnicos de ACIv2</p>
+
+            <h2>Stack Tecnológico</h2>
+            
+            <div class="info-box info">
+                <h3>Plataforma Backend</h3>
+                <ul>
+                    <li><strong>Firebase Functions:</strong> Serverless computing en Google Cloud Platform</li>
+                    <li><strong>Node.js 20+:</strong> Runtime de ejecución</li>
+                    <li><strong>Express.js:</strong> Framework web para endpoints REST</li>
+                    <li><strong>Firestore:</strong> Base de datos NoSQL para persistencia</li>
+                </ul>
+            </div>
+
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <h3>Sistema de Colas</h3>
+                    <p><strong>Redis + Bee-Queue</strong></p>
+                    <p>Procesamiento asíncrono de facturas y eventos de webhooks con reintentos automáticos</p>
+                </div>
+                <div class="platform-card">
+                    <h3>Autenticación</h3>
+                    <p><strong>JWT + Firebase Auth</strong></p>
+                    <p>Tokens RS256 firmados con clave privada, validación contra Firebase Authentication</p>
+                </div>
+                <div class="platform-card">
+                    <h3>Integraciones</h3>
+                    <p><strong>6 Plataformas</strong></p>
+                    <p>APIs oficiales de QuickBooks, Zoho, Xero, Shopify, WooCommerce, Dentalink</p>
+                </div>
+                <div class="platform-card">
+                    <h3>Facturación</h3>
+                    <p><strong>PAC Panamá</strong></p>
+                    <p>Integración con Proveedores Autorizados: Docucenter, Alanube, Digifact</p>
+                </div>
+            </div>
+
+            <h2>Arquitectura de Componentes</h2>
+
+            <div class="code-block">
+                <pre><code>aciv2/
+├── app/               # Lógica de negocio por plataforma
+│   ├── quickbooks/    # Módulos QuickBooks (Invoice, Contact, Item)
+│   ├── zoho/          # Módulos Zoho Books/CRM
+│   ├── xero/          # Módulos Xero Accounting
+│   ├── shopify/       # Módulos Shopify
+│   ├── woocommerce/   # Módulos WooCommerce
+│   └── dentalink/     # Módulos Dentalink
+├── router/            # Endpoints HTTP por plataforma
+├── jobs/              # Procesadores de colas y tareas programadas
+│   ├── queue.js       # Configuración Redis + Bee-Queue
+│   └── processors.js  # Procesadores centralizados
+├── config/            # Configuración y claves
+│   └── jwt-key.json   # Clave privada RS256
+├── email/             # Sistema de envío de comprobantes
+├── template/          # Plantillas PDF/XML
+└── doc/               # Documentación técnica</code></pre>
+            </div>
+
+            <h2>Sistema de Colas (Redis + Bee-Queue)</h2>
+
+            <div class="info-box warning">
+                <h3>Procesamiento Asíncrono</h3>
+                <p>ACIv2 utiliza un sistema robusto de colas para operaciones críticas:</p>
+            </div>
+
+            <h3>Colas Disponibles</h3>
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>zohoInvoiceQueue</h4>
+                    <p>Procesa emisión de facturas de Zoho al PAC con reintentos automáticos.</p>
+                    <ul>
+                        <li><strong>Endpoint:</strong> POST /queue/invoices/:invoice_id</li>
+                        <li><strong>Reintentos:</strong> Hasta 3 intentos con backoff exponencial</li>
+                        <li><strong>Timeout:</strong> 5 minutos por intento</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>zohoCreditNoteQueue</h4>
+                    <p>Procesa emisión de notas de crédito de Zoho.</p>
+                    <ul>
+                        <li><strong>Similar a facturas:</strong> 3 reintentos automáticos</li>
+                        <li><strong>Manejo de errores:</strong> Jobs fallidos almacenados en Redis</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>quickbooksInvoiceQueue</h4>
+                    <p>Procesa eventos de webhooks de QuickBooks en segundo plano.</p>
+                    <ul>
+                        <li><strong>Triggered por:</strong> POST /quickbooks/event_processor</li>
+                        <li><strong>Procesamiento:</strong> Facturas creadas/actualizadas automáticamente</li>
+                        <li><strong>Reintentos inteligentes:</strong> Hasta 8 intentos con delays adaptativos</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Características del Sistema de Colas</h3>
+            <ul class="feature-list">
+                <li>Respuesta inmediata al cliente (< 200ms)</li>
+                <li>Procesamiento real en segundo plano (hasta 9 minutos)</li>
+                <li>Reintentos automáticos con backoff exponencial</li>
+                <li>Jobs fallidos almacenados para análisis</li>
+                <li>Monitoreo de estado de colas via Redis</li>
+            </ul>
+
+            <h2>Sistema de Prevención de Duplicados</h2>
+
+            <div class="info-box danger">
+                <h3>Validación Pre-Creación</h3>
+                <p>ACIv2 incluye un sistema robusto de prevención de facturas y pagos duplicados.</p>
+            </div>
+
+            <h3>Validaciones Automáticas</h3>
+            <div class="code-block">
+                <pre><code>// Prevención de Facturas Duplicadas
+- Verifica DocNumber existente en QuickBooks
+- Compara datos de factura (cliente, monto, fecha)
+- Detecta similitudes >95% para alertar
+- Bloquea creación si CUFE ya existe
+
+// Prevención de Pagos Huérfanos
+- Valida que pago tenga líneas de aplicación
+- Verifica que facturas relacionadas existan
+- Detecta pagos sin aplicar (orphan payments)
+- Sugiere vinculación o eliminación
+
+// Auditoría Completa
+- Todos los intentos registrados en Firestore
+- Logs estructurados por operación
+- Métricas de salud del sistema (0-100)</code></pre>
+            </div>
+
+            <h3>Jobs de Mantenimiento</h3>
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>Reconciliación de Pagos Huérfanos</h4>
+                    <div class="code-block">
+                        <pre><code>// Ejecutar manualmente
+node jobs/reconcile_orphans_job.js
+
+// Programar con cron (diario 2 AM)
+0 2 * * * cd /path/to/aciv2 && node jobs/reconcile_orphans_job.js</code></pre>
+                    </div>
+                    <p><strong>Funcionalidades:</strong></p>
+                    <ul>
+                        <li>Escanea todos los pagos en QuickBooks</li>
+                        <li>Identifica pagos sin líneas de aplicación</li>
+                        <li>Clasifica: eliminar ($0) vs vincular (>$0)</li>
+                        <li>Genera reporte con acciones recomendadas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Mantenimiento de Webhooks</h2>
+
+            <div class="info-box info">
+                <h3>Sistema Automático de Mantenimiento</h3>
+                <p>Limpieza periódica de configuraciones obsoletas y consolidación de duplicados.</p>
+            </div>
+
+            <h3>Periodicidad Recomendada</h3>
+            <ul>
+                <li><strong>Diario:</strong> Reporte de estado y monitoreo</li>
+                <li><strong>Semanal:</strong> Consolidación de duplicados</li>
+                <li><strong>Mensual:</strong> Limpieza de configuraciones >90 días</li>
+                <li><strong>Trimestral:</strong> Mantenimiento completo con análisis profundo</li>
+            </ul>
+
+            <h3>Comandos de Mantenimiento</h3>
+            <div class="code-block">
+                <pre><code>// Reporte de configuraciones
+GET /quickbooks/maintenance/webhook_configs?action=report
+
+// Limpieza de obsoletos (>90 días)
+GET /quickbooks/maintenance/webhook_configs?action=cleanup&days=90
+
+// Consolidación de duplicados
+GET /quickbooks/maintenance/webhook_configs?action=consolidate
+
+// Mantenimiento completo (dry run)
+POST /quickbooks/maintenance/webhook_configs/full
+{
+  "days": 90,
+  "dryRun": true
+}</code></pre>
+            </div>
+
+            <h2>Dependencias Principales</h2>
+
+            <div class="code-block">
+                <pre><code>{
+  "firebase-admin": "^12.3.1",
+  "firebase-functions": "^6.3.2",
+  "express": "^4.18.1",
+  "redis": "^4.7.0",
+  "bee-queue": "^1.7.1",
+  "intuit-oauth": "^4.0.0",
+  "node-quickbooks": "^2.0.43",
+  "@shopify/shopify-api": "^10.0.0",
+  "@woocommerce/woocommerce-rest-api": "^1.0.1",
+  "axios": "^1.11.0",
+  "jsonwebtoken": "^9.0.1",
+  "puppeteer": "^21.7.0",
+  "nodemailer": "^6.9.9"
+}</code></pre>
+            </div>
+
+            <h2>Configuración de Despliegue</h2>
+
+            <div class="code-block">
+                <pre><code>// Firebase Functions Config
+{
+  "region": "us-central1",
+  "runtime": "nodejs20",
+  "timeout": 540,  // 9 minutos
+  "memory": "1GB",
+  "minInstances": 0,
+  "maxInstances": 100
+}
+
+// Variables de Entorno Requeridas
+API_KEY=firebase_api_key
+REDIS_HOST=redis_host
+REDIS_PORT=6379
+JWT_SECRET_KEY=path/to/jwt-key.json</code></pre>
+            </div>
+
+            <h2>Monitoreo y Logs</h2>
+
+            <div class="info-box info">
+                <h3>Dashboard de Salud</h3>
+                <p>Sistema integrado para monitorear la salud general de la API.</p>
+            </div>
+
+            <div class="code-block">
+                <pre><code>// Ejecutar dashboard
+node test/health_check_dashboard.js
+
+// Salida ejemplo:
+SCORE DE SALUD DEL SISTEMA: 85/100
+Estado: BUENO ⚠️
+
+Facturas creadas: 45
+Duplicados bloqueados: 0 ✅
+Pagos creados: 42
+Huérfanos bloqueados: 2 ⚠️
+
+Recomendaciones:
+- Revisar 2 pagos sin líneas de aplicación
+- Sistema operando normalmente</code></pre>
+            </div>
+
+            <h3>Logs Estructurados</h3>
+            <p>Todos los componentes generan logs con el siguiente formato:</p>
+            <div class="code-block">
+                <pre><code>[PLATAFORMA] [realm_id/org_id] Mensaje descriptivo
+[QUICKBOOKS] [123456] Procesando factura 789 - Intento 1/8
+[ZOHO] [org_456] Job 12345 completado exitosamente
+[WEBHOOK] webhook_abc123: 3 eventos procesados</code></pre>
             </div>
         </section>
 
