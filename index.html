@@ -55,6 +55,8 @@
             </li>
             <li><a href="#woocommerce">WooCommerce</a></li>
             <li><a href="#dentalink">Dentalink</a></li>
+            <li><a href="#utilidades">Utilidades y Catálogos</a></li>
+            <li><a href="#administracion">Administración</a></li>
             <li><a href="#errores">Códigos de Error</a></li>
             <li><a href="#mejores-practicas">Mejores Prácticas</a></li>
         </ul>
@@ -1380,6 +1382,464 @@
                     <h4>Query Parameters</h4>
                     <ul>
                         <li><code>invoice_sid</code> - ID de la factura</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "path": "https://storage.googleapis.com/.../invoice.txt"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="utilidades" class="section">
+            <h1>Utilidades y Catálogos</h1>
+            <p>Endpoints para gestión de catálogos, configuraciones y datos auxiliares.</p>
+
+            <h2>Organizaciones</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/token_organization</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene la organización asociada al token JWT.</p>
+                    <h4>Headers Requeridos</h4>
+                    <ul>
+                        <li><code>Authorization</code> - Token JWT con orgId</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "id": "org_123",
+  "name": "Mi Organización",
+  "ruc": "8-123-456",
+  "connections": [...]  
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/organizations/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene organizaciones asociadas a un SID específico.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>module</code> - Módulo (quickbooks, zoho, xero, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/organizations/connection/:organization_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene conexiones asociadas a una organización.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/save_organization_settings</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Guarda configuración de organización incluyendo logo.</p>
+                    <h4>Body (multipart/form-data)</h4>
+                    <div class="code-block">
+                        <pre><code>organization_id: org_123
+mostrarTituloExportable: true
+logo: [file]</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Aplicaciones</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/apps/:application</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Lista todas las conexiones de aplicaciones por tipo.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>application</code> - quickbooks | zoho | xero | shopify | woocommerce | dentalink</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Ubicaciones y Geografía</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/locations</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene catálogo de ubicaciones fiscales de Panamá.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/locations</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Crea una nueva ubicación en el catálogo.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/countries</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene catálogo de países para facturación internacional.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/countries</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Crea o actualiza un país en el catálogo.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/countries/:country_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene un país específico por su ID.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/countries/:country_code/by_code</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene un país por su código ISO (ej: PA, US, ES).</p>
+                </div>
+            </div>
+
+            <h2>Catálogos Fiscales</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/units</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene catálogo de unidades de medida fiscales.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/delivery_conditions</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene catálogo de condiciones de entrega (Incoterms).</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/coins</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene catálogo de monedas para facturación multi-moneda.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/coins</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Crea o actualiza una moneda en el catálogo.</p>
+                </div>
+            </div>
+
+            <h2>Exportación de Archivos</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/export/xml/:cufe</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta el XML de una factura electrónica por su CUFE.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>cufe</code> - Código Único de Factura Electrónica</li>
+                    </ul>
+                    <div class="info-box info">
+                        <p>Descarga directa de archivo XML.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/export/pdf/:cufe</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Redirige al PDF de la factura electrónica según el PAC.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>cufe</code> - Código Único de Factura Electrónica</li>
+                    </ul>
+                    <div class="info-box info">
+                        <p>Redirige automáticamente según el PAC: Docucenter, Alanube, Digifact, etc.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/send_invoice/:cufe</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Envía comprobante de factura por email al cliente.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "organization_id": "org_123"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Usuario</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/user</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene información del usuario autenticado desde el token JWT.</p>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "userId": "user_123",
+  "email": "usuario@example.com",
+  "admin": false
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/user_by_email</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Búsqueda de usuario por email (solo para administradores).</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>email</code> - Email del usuario a buscar</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="administracion" class="section">
+            <h1>Administración QuickBooks</h1>
+            <p>Endpoints para gestión avanzada de clientes, facturas y sincronización con QuickBooks.</p>
+
+            <div class="info-box warning">
+                <h4>Endpoints Especializados</h4>
+                <p>Estos endpoints están diseñados para operaciones administrativas y correcciones de datos. Usan reintentos automáticos y manejo robusto de errores.</p>
+            </div>
+
+            <h2>Gestión de Clientes</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/create_client_quickbooks</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Crea un nuevo cliente en QuickBooks con reintentos automáticos.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "connection_id": "conn_123",
+  "Nombre": "Juan Pérez",
+  "CompanyName": "Empresa ABC",
+  "PrimaryEmailAddr": {
+    "Address": "juan@example.com"
+  },
+  "BillAddr": {
+    "Line1": "Calle Principal",
+    "City": "Ciudad de Panamá",
+    "Country": "PA"
+  },
+  "PrimaryPhone": {
+    "FreeFormNumber": "+507 1234-5678"
+  }
+}</code></pre>
+                    </div>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "message": "Cliente creado exitosamente",
+  "data": {
+    "Id": "456",
+    "DisplayName": "Juan Pérez",
+    "PrimaryEmailAddr": {...}
+  },
+  "timestamp": "2026-02-12T10:30:00.000Z"
+}</code></pre>
+                    </div>
+                    <div class="info-box info">
+                        <p>Sistema de reintentos: hasta 3 intentos con backoff exponencial para rate limits y errores temporales.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/verify_and_sync_customer_quickbooks</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Verifica si un cliente existe en QuickBooks y lo sincroniza o crea.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "connection_id": "conn_123",
+  "Id": "customer_local_id",
+  "Nombre": "Juan Pérez",
+  "Email": "juan@example.com"
+}</code></pre>
+                    </div>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "message": "Cliente verificado/sincronizado",
+  "data": {...},
+  "timestamp": "2026-02-12T10:30:00.000Z"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Gestión de Facturas</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/create_invoice_quickbooks</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Crea una factura en QuickBooks desde datos externos (ej: Docucenter).</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "connection_id": "conn_123",
+  "CustomerRef": "customer_qb_id",
+  "CustomerName": "Juan Pérez",
+  "NumeroFactura": "001-001-00001234",
+  "Fecha": "2026-02-12",
+  "TotalAmt": 150.00,
+  "Line": [
+    {
+      "Amount": 150.00,
+      "DetailType": "SalesItemLineDetail",
+      "SalesItemLineDetail": {
+        "ItemRef": {"value": "1"},
+        "Qty": 1,
+        "UnitPrice": 150.00,
+        "TaxCodeRef": {"value": "TAX"}
+      }
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>Diagnóstico Automático</h4>
+                        <p>Este endpoint incluye logging detallado para debug de mappings de clientes y validación de datos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/fix_invoice_and_payment_customer/:invoice_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Corrige el cliente de una factura y su payment asociado en QuickBooks.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>invoice_id</code> - ID de la factura en QuickBooks</li>
+                    </ul>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>minorversion</code> - Versión de API (default: 75)</li>
+                    </ul>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "connection_id": "conn_123",
+  "customer_id": "nuevo_customer_qb_id"
+}</code></pre>
+                    </div>
+                    <h4>Proceso</h4>
+                    <ol>
+                        <li>Actualiza el CustomerRef de la factura</li>
+                        <li>Busca el Payment asociado</li>
+                        <li>Si existe, elimina el Payment antiguo</li>
+                        <li>Crea nuevo Payment con el cliente correcto</li>
+                    </ol>
+                    <div class="info-box danger">
+                        <h4>Operación Crítica</h4>
+                        <p>Este endpoint elimina y recrea Payments. Usar con precaución y verificar resultados.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Exportación JSON (Debugging)</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/export_json</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta JSON de factura de QuickBooks para debugging.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>id</code> - ID de la factura en QuickBooks</li>
                     </ul>
                     <h4>Respuesta</h4>
                     <div class="code-block">
