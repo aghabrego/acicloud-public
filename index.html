@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACIv2 API - Documentación</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <h2>ACIv2 API</h2>
+            <p class="version">v2.0</p>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Buscar endpoints...">
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="#introduccion" class="active">Introducción</a></li>
+            <li><a href="#autenticacion">Autenticación</a></li>
+            <li>
+                <a href="#quickbooks">QuickBooks</a>
+                <ul class="submenu">
+                    <li><a href="#qb-auth">Autorización</a></li>
+                    <li><a href="#qb-invoices">Facturas</a></li>
+                    <li><a href="#qb-webhooks">Webhooks</a></li>
+                    <li><a href="#qb-maintenance">Mantenimiento</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#zoho">Zoho</a>
+                <ul class="submenu">
+                    <li><a href="#zoho-auth">Autorización</a></li>
+                    <li><a href="#zoho-invoices">Facturas</a></li>
+                    <li><a href="#zoho-credits">Notas de Crédito</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#xero">Xero</a>
+                <ul class="submenu">
+                    <li><a href="#xero-auth">Autorización</a></li>
+                    <li><a href="#xero-invoices">Facturas</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#shopify">Shopify</a>
+                <ul class="submenu">
+                    <li><a href="#shopify-auth">Autorización</a></li>
+                    <li><a href="#shopify-orders">Órdenes</a></li>
+                </ul>
+            </li>
+            <li><a href="#woocommerce">WooCommerce</a></li>
+            <li><a href="#dentalink">Dentalink</a></li>
+        </ul>
+    </nav>
+
+    <main class="content">
+        <section id="introduccion" class="section active">
+            <h1>Documentación ACIv2 API</h1>
+            <p class="lead">API de integración para facturación electrónica con múltiples plataformas</p>
+            
+            <div class="info-box info">
+                <h3>Acerca de esta API</h3>
+                <p>ACIv2 es una API basada en Firebase Functions que proporciona integración con múltiples plataformas de gestión empresarial para la emisión de facturas electrónicas en Panamá.</p>
+            </div>
+
+            <h2>Plataformas Soportadas</h2>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <h3>QuickBooks</h3>
+                    <p>Sistema de contabilidad y gestión empresarial</p>
+                </div>
+                <div class="platform-card">
+                    <h3>Zoho</h3>
+                    <p>Suite de gestión empresarial</p>
+                </div>
+                <div class="platform-card">
+                    <h3>Xero</h3>
+                    <p>Software de contabilidad en la nube</p>
+                </div>
+                <div class="platform-card">
+                    <h3>Shopify</h3>
+                    <p>Plataforma de comercio electrónico</p>
+                </div>
+                <div class="platform-card">
+                    <h3>WooCommerce</h3>
+                    <p>Plugin de tienda para WordPress</p>
+                </div>
+                <div class="platform-card">
+                    <h3>Dentalink</h3>
+                    <p>Sistema de gestión dental</p>
+                </div>
+            </div>
+
+            <h2>Características Principales</h2>
+            <ul class="feature-list">
+                <li>Autenticación mediante JWT o Basic Auth</li>
+                <li>Procesamiento asíncrono de webhooks con sistema de colas (Redis + Bee-Queue)</li>
+                <li>Integración con PAC (Proveedor Autorizado de Certificación) para facturación electrónica</li>
+                <li>Validación automática de RUC, DV y datos fiscales</li>
+                <li>Sincronización bidireccional de facturas y clientes</li>
+                <li>Sistema de reintentos y recuperación de errores</li>
+            </ul>
+
+            <h2>Base URL</h2>
+            <div class="code-block">
+                <code>https://us-central1-[proyecto].cloudfunctions.net/aciv2</code>
+            </div>
+        </section>
+
+        <section id="autenticacion" class="section">
+            <h1>Autenticación</h1>
+            <p>La API soporta dos métodos de autenticación:</p>
+
+            <h2>1. Basic Authentication</h2>
+            <p>Utiliza el header <code>Authorization</code> con credenciales codificadas en Base64:</p>
+            <div class="code-block">
+                <pre><code>Authorization: Basic base64(email:password)</code></pre>
+            </div>
+
+            <div class="info-box warning">
+                <h3>Importante</h3>
+                <p>Las credenciales se validan contra Firebase Authentication. En el primer acceso, se genera y almacena un token de sesión en Firestore.</p>
+            </div>
+
+            <h2>2. JWT Token</h2>
+            <p>Utiliza un token JWT firmado con RS256:</p>
+            <div class="code-block">
+                <pre><code>Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+            </div>
+
+            <p>También se puede enviar como parámetro de query:</p>
+            <div class="code-block">
+                <pre><code>GET /endpoint?token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+            </div>
+
+            <h3>Ejemplo de Autenticación con cURL</h3>
+            <div class="code-block">
+                <pre><code>curl -X GET "https://[base-url]/quickbooks/invoices" \
+  -H "Authorization: Basic $(echo -n 'user@example.com:password' | base64)"</code></pre>
+            </div>
+        </section>
+
+        <section id="quickbooks" class="section">
+            <h1>QuickBooks API</h1>
+            <p>Endpoints para integración con QuickBooks Online.</p>
+
+            <h2 id="qb-auth">Autorización</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/authorization_url</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene la URL de autorización de QuickBooks OAuth2.</p>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "authUri": "https://appcenter.intuit.com/connect/oauth2?...",
+  "state": "random-state-string"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/authorization_url/token_set</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Establece los tokens de acceso después de la autorización OAuth2.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "code": "authorization_code",
+  "realmId": "realm_id",
+  "state": "state_string"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/revoking_refresh_token/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Revoca el refresh token de una conexión.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID de la conexión</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2 id="qb-invoices">Facturas</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene una lista de facturas de QuickBooks.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>limit</code> - Límite de resultados (default: 100)</li>
+                        <li><code>offset</code> - Offset para paginación</li>
+                        <li><code>startDate</code> - Fecha de inicio (ISO 8601)</li>
+                        <li><code>endDate</code> - Fecha de fin (ISO 8601)</li>
+                    </ul>
+                    <h4>Headers Requeridos</h4>
+                    <ul>
+                        <li><code>Authorization</code> - Token JWT con orgId</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/auth/quickbooks/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene facturas con autenticación básica (para uso interno).</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>id</code> - ID de factura específica</li>
+                        <li><code>docNumber</code> - Número de documento</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/invoice/:invoice_sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene una factura específica por su ID.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>invoice_sid</code> - ID de la factura</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/invoice/:invoice_id/details</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene detalles completos de una factura con minor version específica.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>minorversion</code> - Versión de la API de QuickBooks (default: 75)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/to_emit</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite una factura al PAC (Proveedor Autorizado de Certificación).</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "invoiceId": "123",
+  "organization": "org_id"
+}</code></pre>
+                    </div>
+                    <div class="info-box warning">
+                        <p>Este endpoint procesa la factura y envía al PAC panameño para obtener el CUFE.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/credits_note/to_emit</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite una nota de crédito al PAC.</p>
+                </div>
+            </div>
+
+            <h2 id="qb-webhooks">Webhooks</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/event_processor</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Procesa eventos de webhooks de QuickBooks (create, update, delete).</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "eventNotifications": [{
+    "realmId": "realm_id",
+    "dataChangeEvent": {
+      "entities": [{
+        "name": "Invoice",
+        "id": "123",
+        "operation": "Create"
+      }]
+    }
+  }]
+}</code></pre>
+                    </div>
+                    <div class="info-box info">
+                        <h4>Procesamiento Asíncrono</h4>
+                        <p>Este endpoint responde inmediatamente con código 200 y procesa los eventos en segundo plano utilizando sistema de colas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/webhook_health</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Health check para verificar el estado del procesador de eventos.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/webhook_processing_config/:realm_id/:organization_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene la configuración de procesamiento de webhooks para una organización.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/webhook_processing_config</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Actualiza la configuración de procesamiento de webhooks.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "realmId": "realm_id",
+  "organizationId": "org_id",
+  "docucenterEnabled": true,
+  "reason": "Motivo del cambio"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="qb-maintenance">Mantenimiento</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/maintenance/webhook_configs</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Operaciones de mantenimiento para configuraciones de webhooks.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>action</code> - Tipo de operación: report | cleanup | consolidate</li>
+                        <li><code>days</code> - Días de antigüedad para cleanup (default: 90)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/maintenance/webhook_configs/full</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Ejecuta mantenimiento completo (reporte, consolidación y limpieza).</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "days": 90,
+  "dryRun": true
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/quickbooks/mappings/diagnostic/:connection_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Diagnóstico de mappings entre QuickBooks y Docucenter.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/quickbooks/mappings/cleanup/:connection_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Limpia mappings obsoletos.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "dryRun": true
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="zoho" class="section">
+            <h1>Zoho API</h1>
+            <p>Endpoints para integración con Zoho Books y Zoho CRM.</p>
+
+            <h2 id="zoho-auth">Autorización</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/authorization_url/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene la URL de autorización de Zoho OAuth2.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID de la conexión</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/generate_access/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Genera access token y refresh token desde código de autorización.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/revoking_refresh_token/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Revoca el refresh token de Zoho.</p>
+                </div>
+            </div>
+
+            <h2 id="zoho-invoices">Facturas</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene lista de facturas de Zoho Books.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>page</code> - Número de página</li>
+                        <li><code>per_page</code> - Facturaspor página</li>
+                        <li><code>status</code> - Estado: sent | draft | paid | void</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/invoices/:invoice_number</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene una factura específica por su número.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite facturas de Zoho al PAC.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "invoices": ["invoice_id_1", "invoice_id_2"]
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="zoho-credits">Notas de Crédito</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/credit_notes/:credit_number</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene una nota de crédito específica.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/credit_notes</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite notas de crédito al PAC.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="xero" class="section">
+            <h1>Xero API</h1>
+            <p>Endpoints para integración con Xero Accounting.</p>
+
+            <h2 id="xero-auth">Autorización</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/xero/authorization_url</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene la URL de autorización de Xero OAuth2.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/xero/authorization_url/token_set</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Establece los tokens de acceso de Xero.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/xero/revoking_refresh_token/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Revoca el refresh token.</p>
+                </div>
+            </div>
+
+            <h2 id="xero-invoices">Facturas</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/xero/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene facturas de Xero.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/xero/credits_note/:credit_note</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene una nota de crédito específica.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/xero/invoice/:invoice_sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene una factura específica por su ID.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/xero/to_emit</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite facturas de Xero al PAC.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/xero/credits_note/to_emit</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite notas de crédito al PAC.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="shopify" class="section">
+            <h1>Shopify API</h1>
+            <p>Endpoints para integración con Shopify.</p>
+
+            <h2 id="shopify-auth">Autorización</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/authorization_url</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene la URL de autorización de Shopify.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "shop": "tienda.myshopify.com",
+  "scopes": "read_orders,write_orders"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/authorization_url/token_set/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Establece el access token de Shopify.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="path">/shopify/update_client/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Actualiza la configuración del cliente Shopify.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/revoking_refresh_token/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Revoca el token de acceso.</p>
+                </div>
+            </div>
+
+            <h2 id="shopify-orders">Órdenes</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shopify/orders</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene órdenes de Shopify para facturación.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>status</code> - Estado de la orden</li>
+                        <li><code>limit</code> - Límite de resultados</li>
+                        <li><code>since_id</code> - ID mínimo para paginación</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shopify/orders/list</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Lista de órdenes sin procesamiento adicional.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shopify/orders/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene una orden específica.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shopify/orders/refund/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene reembolsos de una orden (para notas de crédito).</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="woocommerce" class="section">
+            <h1>WooCommerce API</h1>
+            <p>Endpoints para integración con WooCommerce.</p>
+
+            <div class="info-box info">
+                <p>Los endpoints de WooCommerce siguen una estructura similar a Shopify, adaptada para la API REST de WooCommerce.</p>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/woocommerce/authorization_url/token_set/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Configura las credenciales de API de WooCommerce.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "url": "https://tienda.com",
+  "consumerKey": "ck_xxxxx",
+  "consumerSecret": "cs_xxxxx"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/woocommerce/orders</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene órdenes de WooCommerce.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dentalink" class="section">
+            <h1>Dentalink API</h1>
+            <p>Endpoints para integración con Dentalink (sistema de gestión dental).</p>
+
+            <div class="info-box info">
+                <p>Dentalink utiliza autenticación mediante API Key y estructura de endpoints personalizada para el sector dental.</p>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/dentalink/authorization_url/token_set/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Configura las credenciales de API de Dentalink.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/dentalink/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene facturas/tratamientos de Dentalink.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
