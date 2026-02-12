@@ -49,10 +49,14 @@
                 <ul class="submenu">
                     <li><a href="#shopify-auth">Autorización</a></li>
                     <li><a href="#shopify-orders">Órdenes</a></li>
+                    <li><a href="#shopify-emit">Emisión</a></li>
+                    <li><a href="#shopify-webhooks">Webhooks</a></li>
                 </ul>
             </li>
             <li><a href="#woocommerce">WooCommerce</a></li>
             <li><a href="#dentalink">Dentalink</a></li>
+            <li><a href="#errores">Códigos de Error</a></li>
+            <li><a href="#mejores-practicas">Mejores Prácticas</a></li>
         </ul>
     </nav>
 
@@ -509,6 +513,81 @@
                 </div>
             </div>
 
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/invoices/:invoice_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite una factura específica al PAC (síncrono).</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>invoice_id</code> - ID de la factura en Zoho</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "message": "FE01234567890...",
+  "automaticallyRedirect": "No"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/queue/invoices/:invoice_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite una factura usando sistema de colas (asíncrono recomendado).</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>invoice_id</code> - ID de la factura en Zoho</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "message": "Trabajo de emisión de factura en progreso.",
+  "jobId": "12345",
+  "invoiceId": "invoice_123",
+  "automaticallyRedirect": "No"
+}</code></pre>
+                    </div>
+                    <div class="info-box info">
+                        <h4>Sistema de Colas</h4>
+                        <p>Este endpoint usa Redis y Bee-Queue para procesamiento asíncrono. La factura se procesa en segundo plano con reintentos automáticos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shipments</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene facturas electrónicas emitidas (shipments).</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>page</code> - Número de página</li>
+                        <li><code>per_page</code> - Resultados por página</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/credit_notes</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene lista de notas de crédito de Zoho.</p>
+                </div>
+            </div>
+
             <h2 id="zoho-credits">Notas de Crédito</h2>
 
             <div class="endpoint">
@@ -607,6 +686,97 @@
                 </div>
                 <div class="endpoint-body">
                     <p>Emite facturas de Xero al PAC.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/xero/invoices/:invoice_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite una factura específica por su ID.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>invoice_id</code> - ID de la factura en Xero</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "message": "FE01234567890..."
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/auth/xero/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene facturas con autenticación básica (para uso interno).</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/auth/xero/credits_note/:credit_note</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene nota de crédito con autenticación básica.</p>
+                </div>
+            </div>
+
+            <h2>Exportación de Datos</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/xero/export_json/:org_sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta JSON de factura para pruebas y debugging.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>invoice_sid</code> - ID de la factura</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "path": "https://storage.googleapis.com/.../12345.txt"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/xero/credit_note/export_json/:org_sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta JSON de nota de crédito.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>invoice_sid</code> - ID de la nota de crédito</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/xero/shipments/export_json/:org_sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta JSON de factura emitida (shipment).</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>invoice_sid</code> - ID de la factura emitida</li>
+                    </ul>
                 </div>
             </div>
 
@@ -719,6 +889,143 @@
                 </div>
                 <div class="endpoint-body">
                     <p>Obtiene reembolsos de una orden (para notas de crédito).</p>
+                </div>
+            </div>
+
+            <h2>Emisión de Facturas</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/orders/to_emit/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Procesa emisión de factura desde webhook de Shopify (automático).</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID de la organización</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "error": false,
+  "message": "Orden emitida correctamente",
+  "data": {...},
+  "timestamp": "2026-02-12T10:30:00.000Z"
+}</code></pre>
+                    </div>
+                    <div class="info-box warning">
+                        <p>Este endpoint se usa típicamente como receptor de webhooks de Shopify y retorna siempre código 200 con el estado en el body.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/orders/to_emit_manual/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite factura manualmente (invocación directa).</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID de la organización</li>
+                    </ul>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "order_id": "123456789",
+  "force": false
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/orders/credits_note/to_emit_manual/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite nota de crédito manualmente desde un reembolso.</p>
+                </div>
+            </div>
+
+            <h2>Webhooks</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shopify/orders/post_webhooks/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Lista los webhooks registrados en Shopify.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/orders/post_webhooks</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Registra un webhook en Shopify para notificaciones automáticas.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "topic": "orders/create",
+  "address": "https://your-api.com/shopify/orders/to_emit/:sid",
+  "format": "json"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/shopify/orders/post_webhooks/:sid/remove</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Elimina un webhook registrado.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "webhook_id": "123456789"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Facturas Emitidas</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shopify/shipments</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene facturas electrónicas emitidas (shipments).</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>page</code> - Número de página</li>
+                        <li><code>per_page</code> - Resultados por página</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/shipments/export_json/:org_sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta JSON de factura emitida para debugging.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>invoice_sid</code> - ID de la factura emitida</li>
+                    </ul>
                 </div>
             </div>
         </section>
@@ -1245,6 +1552,288 @@
                     <li><strong>Webhooks:</strong> Hasta 5 intentos con delays incrementales</li>
                     <li><strong>Tokens:</strong> Renovación automática en errores 401</li>
                     <li><strong>Rate Limits:</strong> Espera inteligente según tipo de error</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="mejores-practicas" class="section">
+            <h1>Mejores Prácticas</h1>
+
+            <h2>Workflows Comunes</h2>
+
+            <h3>1. Configuración Inicial de Integración</h3>
+            <div class="code-block">
+                <pre><code>// Paso 1: Obtener URL de autorización
+GET /quickbooks/authorization_url
+// o para Zoho
+GET /authorization_url/:sid
+
+// Paso 2: Usuario autoriza en plataforma
+// (redirigir al authUri recibido)
+
+// Paso 3: Establecer tokens
+POST /quickbooks/authorization_url/token_set
+{
+  "code": "authorization_code",
+  "realmId": "realm_id"
+}
+
+// Paso 4: Verificar conexión
+GET /quickbooks/invoices?limit=1</code></pre>
+            </div>
+
+            <h3>2. Emisión de Factura (Recomendado)</h3>
+            <div class="info-box info">
+                <h4>Usar Sistema de Colas para Mayor Confiabilidad</h4>
+                <p>Para Zoho, se recomienda usar el endpoint con cola:</p>
+            </div>
+            <div class="code-block">
+                <pre><code>// QuickBooks (procesamiento asíncrono automático vía webhook)
+// Las facturas se procesan automáticamente cuando llegan webhooks
+
+// Zoho (usar cola para asíncrono)
+POST /queue/invoices/:invoice_id
+{
+  "organization_id": "org_123"
+}
+
+// Respuesta inmediata con job ID
+{
+  "success": true,
+  "jobId": "12345",
+  "message": "Trabajo de emisión de factura en progreso."
+}
+
+// Shopify/WooCommerce (webhook automático)
+// Configurar webhook que apunte a:
+POST /shopify/orders/to_emit/:sid
+POST /woo/invoices/to_emit/:sid</code></pre>
+            </div>
+
+            <h3>3. Verificación de Factura Emitida</h3>
+            <div class="code-block">
+                <pre><code>// Obtener factura con CUFE
+GET /quickbooks/invoice/:invoice_id/details?minorversion=75
+
+// Verificar en PrivateNote
+{
+  "Invoice": {
+    "Id": "123",
+    "DocNumber": "001-001-00001234",
+    "PrivateNote": "CUFE: FE01234567890..."
+  }
+}
+
+// Si no tiene CUFE, emitir
+POST /quickbooks/to_emit
+{
+  "invoiceId": "123",
+  "organization": "org_id"
+}</code></pre>
+            </div>
+
+            <h2>Manejo de Webhooks</h2>
+
+            <h3>QuickBooks Webhooks</h3>
+            <div class="code-block">
+                <pre><code>// Configurar endpoint en QuickBooks Developer Dashboard:
+URL: https://your-api.com/quickbooks/event_processor
+
+// Payload recibido:
+{
+  "eventNotifications": [{
+    "realmId": "123456789",
+    "dataChangeEvent": {
+      "entities": [{
+        "name": "Invoice",
+        "id": "456",
+        "operation": "Create"
+      }]
+    }
+  }]
+}
+
+// Respuesta inmediata (< 3 segundos)
+{
+  "success": true,
+  "webhookId": "webhook_abc123",
+  "processing": "En progreso en segundo plano"
+}</code></pre>
+            </div>
+
+            <h3>Shopify/WooCommerce Webhooks</h3>
+            <div class="code-block">
+                <pre><code>// Registrar webhook
+POST /shopify/orders/post_webhooks
+{
+  "topic": "orders/create",
+  "address": "https://your-api.com/shopify/orders/to_emit/:sid"
+}
+
+// Listar webhooks activos
+GET /shopify/orders/post_webhooks/:sid
+
+// Eliminar webhook
+POST /shopify/orders/post_webhooks/:sid/remove
+{
+  "webhook_id": "123456789"
+}</code></pre>
+            </div>
+
+            <h2>Optimizaciones y Consideraciones</h2>
+
+            <div class="info-box warning">
+                <h4>Rate Limits</h4>
+                <ul>
+                    <li><strong>QuickBooks:</strong> 500 peticiones/minuto por realmId</li>
+                    <li><strong>Zoho:</strong> 200 peticiones/minuto</li>
+                    <li><strong>Xero:</strong> 60 peticiones/minuto</li>
+                    <li><strong>Shopify:</strong> 2 peticiones/segundo por tienda</li>
+                </ul>
+                <p>La API implementa reintentos automáticos con backoff exponencial.</p>
+            </div>
+
+            <div class="info-box info">
+                <h4>Validaciones Automáticas</h4>
+                <p>La API realiza las siguientes validaciones antes de emitir:</p>
+                <ul>
+                    <li>RUC válido (no 0-0-0 ni valores placeholder)</li>
+                    <li>Verificación de CUFE existente (evita duplicados)</li>
+                    <li>Tax codes válidos (ITBMS0, ITBMS7, ITBMS10, ITBMS15)</li>
+                    <li>Datos de cliente completos</li>
+                    <li>Tipo de receptor (nacional 01-02-03 o extranjero 04)</li>
+                </ul>
+            </div>
+
+            <h2>Debugging y Troubleshooting</h2>
+
+            <h3>Exportar JSON para Debugging</h3>
+            <div class="code-block">
+                <pre><code>// QuickBooks
+GET /quickbooks/export_json?id=:invoice_id
+
+// Zoho/Xero/Shopify/WooCommerce/Dentalink
+GET /xero/export_json/:org_sid?invoice_sid=:id
+GET /shopify/shipments/export_json/:org_sid?invoice_sid=:id
+GET /woo/export_json/:app_id
+GET /dentalink/shipments/export_json/:org_sid?invoice_sid=:id
+
+// Respuesta
+{
+  "path": "https://storage.googleapis.com/.../invoice.txt"
+}</code></pre>
+            </div>
+
+            <h3>Verificar Configuración de Webhooks</h3>
+            <div class="code-block">
+                <pre><code>// QuickBooks - Health check
+GET /quickbooks/webhook_health
+
+// QuickBooks - Configuración por organización
+GET /quickbooks/webhook_processing_config/:realm_id/:organization_id
+
+// QuickBooks - Actualizar configuración
+POST /quickbooks/webhook_processing_config
+{
+  "realmId": "123",
+  "organizationId": "org_456",
+  "docucenterEnabled": true,
+  "reason": "Habilitar procesamiento automático"
+}</code></pre>
+            </div>
+
+            <h3>Mantenimiento de Mappings</h3>
+            <div class="code-block">
+                <pre><code>// Diagnóstico de mappings
+GET /quickbooks/mappings/diagnostic/:connection_id
+
+// Limpieza de mappings obsoletos (dry run)
+POST /quickbooks/mappings/cleanup/:connection_id
+{
+  "dryRun": true
+}
+
+// Ejecutar limpieza real
+POST /quickbooks/mappings/cleanup/:connection_id
+{
+  "dryRun": false
+}</code></pre>
+            </div>
+
+            <h2>Seguridad y Autenticación</h2>
+
+            <div class="info-box danger">
+                <h4>Protección de Credenciales</h4>
+                <ul>
+                    <li>Nunca exponer tokens en logs o respuestas de error</li>
+                    <li>Usar HTTPS para todas las peticiones</li>
+                    <li>Rotar refresh tokens periódicamente</li>
+                    <li>Implementar validación de signatures en webhooks (cuando disponible)</li>
+                    <li>Almacenar tokens encriptados en Firestore</li>
+                </ul>
+            </div>
+
+            <div class="info-box info">
+                <h4>Renovación Automática de Tokens</h4>
+                <p>La API maneja automáticamente la renovación de tokens:</p>
+                <ul>
+                    <li>Detecta errores 401 y renueva el access token</li>
+                    <li>Usa refresh token para obtener nuevo access token</li>
+                    <li>Reintentos automáticos después de renovación</li>
+                    <li>Actualiza tokens en Firestore para persistencia</li>
+                </ul>
+            </div>
+
+            <h2>Monitoreo y Logs</h2>
+
+            <h3>Logs Estructurados</h3>
+            <p>Los logs de la API incluyen:</p>
+            <div class="code-block">
+                <pre><code>// Formato de log típico
+[QUICKBOOKS] [realm_id] Procesando factura 123 - Intento 1/8
+[QUICKBOOKS] [realm_id] RUC: 8-123-456, DV: 78, TIPO: 01
+[QUICKBOOKS] [realm_id] Factura 123 procesada exitosamente
+[QUICKBOOKS] [realm_id] CUFE: FE01234567890...
+
+// Logs de webhook
+WEBHOOK webhook_abc123: Iniciando procesamiento
+WEBHOOK webhook_abc123: 3 eventos recibidos
+WEBHOOK webhook_abc123: Procesamiento exitoso - 3/3 procesados</code></pre>
+            </div>
+
+            <h3>Eventos en Cola</h3>
+            <div class="code-block">
+                <pre><code>// Ver eventos pausados
+GET /quickbooks/paused_webhook_events/:realm_id?organization_id=:org_id
+
+// Reprocesar eventos pausados
+POST /quickbooks/reprocess_paused_events/:realm_id
+{
+  "eventIds": ["event_1", "event_2"]
+}</code></pre>
+            </div>
+
+            <h2>Arquitectura y Escalabilidad</h2>
+
+            <div class="info-box info">
+                <h4>Sistema de Colas (Redis + Bee-Queue)</h4>
+                <p>Para operaciones de larga duración:</p>
+                <ul>
+                    <li><strong>Zoho Invoices:</strong> Cola dedicada con procesador centralizado</li>
+                    <li><strong>Zoho Credit Notes:</strong> Cola separada para notas de crédito</li>
+                    <li><strong>QuickBooks Webhooks:</strong> Procesamiento en segundo plano</li>
+                    <li><strong>Reintentos:</strong> Hasta 3 intentos por job con backoff exponencial</li>
+                    <li><strong>Failed Jobs:</strong> Almacenados en Redis para análisis</li>
+                </ul>
+            </div>
+
+            <div class="info-box info">
+                <h4>Firebase Functions</h4>
+                <ul>
+                    <li><strong>Region:</strong> us-central1</li>
+                    <li><strong>Timeout:</strong> 540 segundos (9 minutos)</li>
+                    <li><strong>Memory:</strong> 1GB</li>
+                    <li><strong>Runtime:</strong> Node.js 20+</li>
                 </ul>
             </div>
         </section>
