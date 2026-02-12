@@ -1,9 +1,11 @@
+// v2.0 - Fixed subsection navigation
 document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-menu a');
     const sections = document.querySelectorAll('.section');
     const searchInput = document.getElementById('searchInput');
 
     function showSection(targetId) {
+        // Remover todas las clases active
         sections.forEach(section => {
             section.classList.remove('active');
         });
@@ -12,29 +14,46 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.remove('active');
         });
 
-        let targetSection = document.getElementById(targetId);
+        // Buscar el elemento objetivo
+        const targetElement = document.getElementById(targetId);
         
-        // Si no es una sección completa, podría ser un subsección (h2, h3)
-        if (!targetSection || !targetSection.classList.contains('section')) {
-            const targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                // Encontrar la sección padre
-                targetSection = targetElement.closest('.section');
-                
-                if (targetSection) {
-                    targetSection.classList.add('active');
-                    
-                    // Hacer scroll al elemento específico después de mostrar la sección
-                    setTimeout(() => {
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 100);
-                }
-            }
-        } else {
-            targetSection.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (!targetElement) {
+            console.warn('Elemento no encontrado:', targetId);
+            return;
         }
 
+        // Determinar si es una sección completa o una subsección
+        let targetSection;
+        
+        if (targetElement.classList.contains('section')) {
+            // Es una sección completa
+            targetSection = targetElement;
+            targetSection.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // Es una subsección (h2, h3, etc.), buscar la sección padre
+            targetSection = targetElement.closest('.section');
+            
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Esperar a que la sección se muestre y luego hacer scroll
+                setTimeout(() => {
+                    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                    const offsetPosition = elementPosition - 20; // 20px de margen
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }, 50);
+            } else {
+                console.warn('No se encontró sección padre para:', targetId);
+                return;
+            }
+        }
+
+        // Activar el link correspondiente
         const activeLink = document.querySelector(`a[href="#${targetId}"]`);
         if (activeLink) {
             activeLink.classList.add('active');
