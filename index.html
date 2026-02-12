@@ -37,6 +37,7 @@
                     <li><a href="#zoho-auth">Autorización</a></li>
                     <li><a href="#zoho-invoices">Facturas</a></li>
                     <li><a href="#zoho-credits">Notas de Crédito</a></li>
+                    <li><a href="#zoho-custom-fields">Campos Personalizados</a></li>
                 </ul>
             </li>
             <li>
@@ -893,6 +894,411 @@ Recomendaciones:
                 <div class="endpoint-body">
                     <p>Emite notas de crédito al PAC.</p>
                 </div>
+            </div>
+
+            <h2 id="zoho-custom-fields">Campos Personalizados para Zoho Books</h2>
+            
+            <div class="info-box warning">
+                <h3>Configuración Requerida en Zoho Books</h3>
+                <p>Para la facturación electrónica panameña, es necesario configurar campos personalizados específicos en Zoho Books. Estos campos almacenan la información requerida por la DGI de Panamá.</p>
+            </div>
+
+            <h3>Campos Personalizados para Facturas</h3>
+            
+            <p>Configurar en: <strong>Personalización de campos de facturas</strong> → <a href="https://books.zoho.com/app#/settings/preferences/invoices/customfields" target="_blank">https://books.zoho.com/app#/settings/preferences/invoices/customfields</a></p>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>Campos Obligatorios</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Campo / API name</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tipo</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Valores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tipo de documento</strong><br><code>cf_tipo_de_documento</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Factura de Operación Interna<br>2-Factura de Importación<br>3-Factura de Exportación<br>4-Nota de Crédito<br>5-Nota de Débito<br>6-Nota de Crédito Genérica<br>7-Nota de Débito Genérica<br>8-Factura de Zona Franca<br>9-Reembolso</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Punto de Facturación</strong><br><code>cf_punto_de_facturacio_n</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">001-Nombre personalizado 1<br>002-Nombre personalizado 2<br>003-Nombre personalizado 3<br>(Formato: 3 dígitos + nombre)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Naturaleza de la Operación</strong><br><code>cf_naturaleza_de_la_operacio_n</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Venta<br>2-Exportación<br>10-Transferencia<br>11-Devolución<br>12-Consignación<br>13-Remesa<br>14-Entrega gratuita<br>20-Compra<br>21-Importación</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tipo de la operación</strong><br><code>cf_tipo_de_la_operacio_n</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Salida o venta<br>2-Entrada o compra</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tipo de transacción de venta</strong><br><code>cf_tipo_de_transaccio_n_de_ven</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Venta de Giro del negocio<br>2-Venta Activo Fijo<br>3-Venta de Bienes Raíces<br>4-Prestación de Servicio</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Emisor</strong><br><code>cf_emisor</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Lookup (Módulo: Usuarios)<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Usuario del sistema que emite</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Forma de pago</strong><br><code>cf_forma_de_pago</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">01-Crédito<br>02-Efectivo<br>03-Tarjeta Crédito<br>04-Tarjeta Débito<br>05-Tarjeta Fidelización<br>06-Vale<br>07-Tarjeta de Regalo<br>08-Transf./Depósito Bancario<br>09-Cheque<br>10-Punto de Pago<br>99-Otro</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tiempo de pago</strong><br><code>cf_tiempo_de_pago</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Inmediato<br>2-Plazo<br>3-Mixto</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>CUFE</strong><br><code>cf_cufe</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Cuadro de texto (varias líneas)<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Generado por el PAC al emitir</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4>Campos Opcionales</h4>
+                    <ul>
+                        <li><code>cf_informaci_n_de_inter_s</code> - Cuadro de texto (Información de interés del emisor)</li>
+                        <li><code>cf_estado_factura</code> - Cuadro de texto (Estado de la factura)</li>
+                        <li><code>cf_n_mero_secuencial</code> - Número (Número secuencial interno)</li>
+                        <li><code>cf_condiciones_de_entrega</code> - Texto (Condiciones de entrega)</li>
+                    </ul>
+
+                    <h4>Campos para Exportación</h4>
+                    <ul>
+                        <li><code>cf_moneda_de_la_operaci_n_de_e</code> - Moneda de la operación</li>
+                        <li><code>cf_descripci_n_de_moneda_de_la</code> - Descripción de la moneda</li>
+                        <li><code>cf_tipo_de_cambio_a_la_fecha_d</code> - Tipo de cambio</li>
+                        <li><code>cf_monto_en_la_moneda_extranje</code> - Monto en moneda extranjera (Decimal)</li>
+                        <li><code>cf_puerto_de_embarque_de_la_me</code> - Puerto de embarque</li>
+                    </ul>
+
+                    <h4>Campos de Retención</h4>
+                    <ul>
+                        <li><code>cf_c_digo_de_retenci_n_a_aplic</code> - Código de retención (Menú desplegable):
+                            <ul>
+                                <li>01-Pago por servicio profesional al estado 100%</li>
+                                <li>02-Pago por venta bienes/servicios al estado 50%</li>
+                                <li>03-Pago a no domiciliado 100%</li>
+                                <li>04-Pago por compra bienes/servicios 50%</li>
+                                <li>07-Pago a comercio TC/TD 50%</li>
+                                <li>08-Otros (disminución)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Campos Personalizados para Notas de Crédito</h3>
+            
+            <p>Configurar en: <strong>Personalización de campos de Nota de crédito</strong> → <a href="https://books.zoho.com/app#/settings/preferences/creditnotes/customfields" target="_blank">https://books.zoho.com/app#/settings/preferences/creditnotes/customfields</a></p>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Campo / API name</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tipo</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Valores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tipo de documento</strong><br><code>cf_tipo_de_documento</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">4-Nota de Crédito Referente a una o varias FE<br>6-Nota de Crédito Genérica</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>CUFE</strong><br><code>cf_cufe</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Cuadro de texto (varias líneas)<br>(Obligatorio: Sí)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Generado por el PAC al emitir</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Campos Personalizados para Artículos/Items</h3>
+            
+            <p>Configurar en: <strong>Personalización de campos de artículos</strong> → <a href="https://books.zoho.com/app#/settings/preferences/items/customfields" target="_blank">https://books.zoho.com/app#/settings/preferences/items/customfields</a></p>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Campo / API name</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tipo</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Número secuencial</strong><br><code>cf_nu_mero_secuencial</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Número (Opcional)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Mostrar en transacciones: Sí</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Código interno</strong><br><code>cf_co_digo_interno</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto (Opcional)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Código interno del ítem</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Código del Ítem Abreviado</strong><br><code>cf_co_digo_del_i_tem_abreviado</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto (Opcional)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Código abreviado</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Código del Ítem</strong><br><code>cf_co_digo_del_i_tem</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto (Opcional)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Código completo del ítem</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Código GTIN</strong><br><code>cf_co_digo_gtin_del_i_tem</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Número (Opcional)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Código GTIN/EAN del producto</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Fecha de fabricación</strong><br><code>cf_fecha_de_fabricacio_n</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Fecha (Opcional)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Fecha de fabricación del producto</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Fecha de caducidad</strong><br><code>cf_fecha_de_caducidad</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Fecha (Opcional)</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Fecha de caducidad del producto</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Campos Personalizados para Usuarios/Clientes</h3>
+            
+            <p>Configurar en: <strong>Personalización de campos de usuarios</strong> → <a href="https://books.zoho.com/app#/settings/preferences/users/customfields" target="_blank">https://books.zoho.com/app#/settings/preferences/users/customfields</a></p>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Campo / API name</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tipo</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Valores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tipo de Contribuyente</strong><br><code>cf_tipo_de_contribuyente</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Natural<br>2-Jurídico</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>RUC</strong><br><code>cf_ruc</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Número de RUC del usuario</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Dígito Verificador</strong><br><code>cf_di_gito_verificador</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Número</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">DV del RUC</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Teléfono</strong><br><code>cf_tele_fono</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Número telefónico</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Código PDC</strong><br><code>cf_co_digo_de_provincia_distrito_y_corregimiento</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Código completo (Provincia-Distrito-Corregimiento)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Provincia</strong><br><code>cf_provincia</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">BOCAS DEL TORO<br>COCLE<br>COLON<br>CHIRIQUI<br>DARIEN<br>HERRERA<br>LOS SANTOS<br>PANAMA<br>VERAGUAS<br>PANAMA OESTE</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Distrito</strong><br><code>cf_distrito</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Nombre del distrito</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Corregimiento</strong><br><code>cf_corregimiento</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Nombre del corregimiento</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Coordenadas geográficas</strong><br><code>cf_coordenadas_geogr_ficas</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Texto</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Lat,Long del emisor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Campos Personalizados para Contactos (Clientes)</h3>
+            
+            <p>Configurar en: <strong>Personalización de campos de clientes</strong> → <a href="https://books.zoho.com/app#/settings/preferences/contacts" target="_blank">https://books.zoho.com/app#/settings/preferences/contacts</a></p>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Campo / API name</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tipo</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Valores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tipo de receptor</strong><br><code>cf_tipo_de_receptor</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Contribuyente<br>2-Consumidor final<br>3-Gobierno<br>4-Extranjero</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>Tipo de Contribuyente</strong><br><code>cf_tipo_de_contribuyente</code></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Menú desplegable</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1-Natural<br>2-Jurídico</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Configuración de Impuestos</h3>
+            
+            <p>Configurar en: <strong>Tasas de impuestos</strong> → <a href="https://books.zoho.com/app#/settings/taxes/taxrates" target="_blank">https://books.zoho.com/app#/settings/taxes/taxrates</a></p>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>Tasas de ITBMS (Panamá)</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Nombre del Impuesto</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tarifa (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1: 7%</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">7</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">2: 10%</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">10</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">3: 15%</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Integración con Scripts Deluge (Opcional)</h3>
+            
+            <div class="info-box info">
+                <h4>Botones Personalizados en Zoho</h4>
+                <p>Zoho Books permite crear botones personalizados usando Deluge Script para automatizar la emisión de facturas y notas de crédito directamente desde la interfaz web.</p>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>Script para timbrar Factura (Deluge)</h4>
+                    <p>Ubicación: <strong>Preferencias → Facturas → Botones Personalizados</strong></p>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>custom_field = invoice.get("custom_field_hash");
+if(custom_field != null && custom_field.get("cf_cufe") != null && custom_field.get("cf_cufe") != "CUFE")
+{
+    return {"code":2830,"message":"Ya existe Factura autorizada: " + custom_field.get("cf_cufe")};
+}
+else
+{
+    invoiceId = invoice.get("invoice_id");
+    Base64Encoded = zoho.encryption.base64Encode("email:password");
+    AuthorizationBasic = " Basic " + Base64Encoded;
+    headers = Map();
+    headers.put("Accept","application/json");
+    headers.put("Content-Type","application/json");
+    headers.put("Authorization",AuthorizationBasic);
+    requestMap = Map();
+    requestMap.put("organization_id","your_org_id");
+    setInvoice = postUrl("https://us-central1-[proyecto].cloudfunctions.net/aciv2/invoices/" + invoiceId,requestMap,headers);
+    if(setInvoice.get("success") == false)
+    {
+        return {"code":2830,"message":setInvoice.get("message")};
+    }
+    else
+    {
+        return setInvoice;
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>Script para timbrar Nota de Crédito (Deluge)</h4>
+                    <p>Ubicación: <strong>Preferencias → Notas de Crédito → Botones Personalizados</strong></p>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>custom_field = creditnote.get("custom_field_hash");
+if(custom_field != null && custom_field.get("cf_cufe") != null && custom_field.get("cf_cufe") != "CUFE")
+{
+    return {"code":2830,"message":"Ya existe Nota de crédito autorizada: " + custom_field.get("cf_cufe")};
+}
+else
+{
+    creditnoteId = creditnote.get("creditnote_id");
+    Base64Encoded = zoho.encryption.base64Encode("email:password");
+    AuthorizationBasic = " Basic " + Base64Encoded;
+    headers = Map();
+    headers.put("Accept","application/json");
+    headers.put("Content-Type","application/json");
+    headers.put("Authorization",AuthorizationBasic);
+    requestMap = Map();
+    requestMap.put("organization_id","your_org_id");
+    setCreditNote = postUrl("https://us-central1-[proyecto].cloudfunctions.net/aciv2/credit_notes/" + creditnoteId,requestMap,headers);
+    if(setCreditNote.get("success") == false)
+    {
+        return {"code":2830,"message":setCreditNote.get("message")};
+    }
+    else
+    {
+        return setCreditNote;
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box warning">
+                <h4>Notas Importantes</h4>
+                <ul>
+                    <li>Reemplazar <code>email:password</code> con las credenciales de autenticación Basic Auth</li>
+                    <li>Reemplazar <code>your_org_id</code> con el ID de organización del sistema</li>
+                    <li>Reemplazar <code>[proyecto]</code> con el ID del proyecto Firebase</li>
+                    <li>Los scripts validan que no exista CUFE previo para evitar duplicados</li>
+                </ul>
             </div>
         </section>
 
