@@ -728,22 +728,61 @@
             <p>Endpoints para integración con WooCommerce.</p>
 
             <div class="info-box info">
-                <p>Los endpoints de WooCommerce siguen una estructura similar a Shopify, adaptada para la API REST de WooCommerce.</p>
+                <p>WooCommerce utiliza autenticación mediante Consumer Key y Consumer Secret de la API REST de WooCommerce.</p>
             </div>
+
+            <h2>Configuración</h2>
 
             <div class="endpoint">
                 <div class="endpoint-header">
                     <span class="method post">POST</span>
-                    <span class="path">/woocommerce/authorization_url/token_set/:sid</span>
+                    <span class="path">/woo/authorization_url/token_set/:sid</span>
                 </div>
                 <div class="endpoint-body">
                     <p>Configura las credenciales de API de WooCommerce.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID de la conexión</li>
+                    </ul>
                     <h4>Body</h4>
                     <div class="code-block">
                         <pre><code>{
   "url": "https://tienda.com",
-  "consumerKey": "ck_xxxxx",
-  "consumerSecret": "cs_xxxxx"
+  "consumerKey": "ck_xxxxxxxxxxxxxxxxxxxxx",
+  "consumerSecret": "cs_xxxxxxxxxxxxxxxxxxxxx"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Órdenes</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/woo/invoices</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene lista de órdenes de WooCommerce para facturación.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>status</code> - Estado de órdenes: completed | processing | pending</li>
+                        <li><code>page</code> - Número de página</li>
+                        <li><code>per_page</code> - Órdenes por página</li>
+                        <li><code>after</code> - Fecha de inicio (ISO 8601)</li>
+                        <li><code>before</code> - Fecha de fin (ISO 8601)</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "code": 0,
+  "message": "success",
+  "data": [...],
+  "page_context": {
+    "page": 1,
+    "per_page": 10,
+    "has_more_page": false
+  }
 }</code></pre>
                     </div>
                 </div>
@@ -751,11 +790,136 @@
 
             <div class="endpoint">
                 <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="path">/woocommerce/orders</span>
+                    <span class="method post">POST</span>
+                    <span class="path">/woo/invoices/:invoice_id</span>
                 </div>
                 <div class="endpoint-body">
-                    <p>Obtiene órdenes de WooCommerce.</p>
+                    <p>Emite una factura específica al PAC.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>invoice_id</code> - ID de la orden en WooCommerce</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "message": "FE01234567890...",
+  "automaticallyRedirect": "No"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/woo/invoices/to_emit/:sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Procesa emisión de factura desde webhook de WooCommerce.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID de la aplicación WooCommerce</li>
+                    </ul>
+                    <div class="info-box warning">
+                        <p>Este endpoint se usa típicamente como receptor de webhooks de WooCommerce.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Webhooks</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/woo/invoices/post_webhooks</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Registra un webhook en WooCommerce para notificaciones automáticas.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "topic": "order.created",
+  "delivery_url": "https://your-api.com/woo/invoices/to_emit/:sid"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/woo/invoices/post_webhooks/:sid/remove</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Elimina un webhook registrado.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "webhook_id": "123"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Envíos</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/woo/shipments</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene información de envíos asociados a órdenes.</p>
+                </div>
+            </div>
+
+            <h2>Exportación</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/woo/export/pdf/:cufe</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta PDF de factura emitida por su CUFE.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>cufe</code> - Código Único de Factura Electrónica</li>
+                    </ul>
+                    <div class="info-box info">
+                        <p>Redirige automáticamente a la URL del PDF según el PAC (Docucenter, Alanube, etc.)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/woo/export/xml/public/:cufe/:app_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta XML de la factura electrónica.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/woo/export/carta/public/pdf/:cufe/:app_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Genera carta de representación gráfica en PDF.</p>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/woo/export/cinta/public/pdf/:cufe/:app_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Genera cinta de auditoría en PDF.</p>
                 </div>
             </div>
         </section>
@@ -765,27 +929,323 @@
             <p>Endpoints para integración con Dentalink (sistema de gestión dental).</p>
 
             <div class="info-box info">
-                <p>Dentalink utiliza autenticación mediante API Key y estructura de endpoints personalizada para el sector dental.</p>
+                <p>Dentalink integra tratamientos dentales, pagos y pacientes para emisión de facturas electrónicas del sector salud.</p>
             </div>
+
+            <h2>Pacientes</h2>
 
             <div class="endpoint">
                 <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="path">/dentalink/authorization_url/token_set/:sid</span>
+                    <span class="method get">GET</span>
+                    <span class="path">/dentalink/pacientes</span>
                 </div>
                 <div class="endpoint-body">
-                    <p>Configura las credenciales de API de Dentalink.</p>
+                    <p>Busca pacientes en Dentalink.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>q</code> - Término de búsqueda (nombre, RUC, etc.)</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "patients": [{
+    "id": "123",
+    "name": "Juan Pérez",
+    "ruc": "8-123-456",
+    "email": "juan@example.com"
+  }]
+}</code></pre>
+                    </div>
                 </div>
             </div>
 
             <div class="endpoint">
                 <div class="endpoint-header">
                     <span class="method get">GET</span>
-                    <span class="path">/dentalink/invoices</span>
+                    <span class="path">/dentalink/pacientes/:sid/pagos</span>
                 </div>
                 <div class="endpoint-body">
-                    <p>Obtiene facturas/tratamientos de Dentalink.</p>
+                    <p>Obtiene los pagos de un paciente específico.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID del paciente en Dentalink</li>
+                    </ul>
                 </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/dentalink/pacientes/:sid/tratamientos</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene los tratamientos de un paciente.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>sid</code> - ID del paciente</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "treatments": [{
+    "id": "456",
+    "name": "Ortodoncia",
+    "status": "active",
+    "amount": 1500.00
+  }]
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Facturas</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/dentalink/invoice/:relative_id</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene detalles de una factura/tratamiento por su ID relativo.</p>
+                    <h4>Parámetros</h4>
+                    <ul>
+                        <li><code>relative_id</code> - ID relativo del tratamiento</li>
+                    </ul>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>organization_id</code> - ID de la organización</li>
+                        <li><code>payment_id</code> - IDs de pagos (separados por coma)</li>
+                        <li><code>treatment_id</code> - IDs de tratamientos (separados por coma)</li>
+                        <li><code>treatment_detail_id</code> - IDs de detalles (separados por coma)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/dentalink/invoice/:invoice_sid/payments</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Obtiene los pagos asociados a una factura/tratamiento.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>organization_id</code> - ID de la organización</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/dentalink/to_emit</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Emite factura electrónica desde datos de Dentalink al PAC.</p>
+                    <h4>Body</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "patient_id": "123",
+  "treatment_ids": ["456", "789"],
+  "payment_ids": ["101", "102"]
+}</code></pre>
+                    </div>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "success": true,
+  "cufe": "FE01234567890...",
+  "transactionId": "abc123"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Exportación</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/dentalink/shipments/export_json/:org_sid</span>
+                </div>
+                <div class="endpoint-body">
+                    <p>Exporta JSON de factura para pruebas y debugging.</p>
+                    <h4>Query Parameters</h4>
+                    <ul>
+                        <li><code>invoice_sid</code> - ID de la factura</li>
+                    </ul>
+                    <h4>Respuesta</h4>
+                    <div class="code-block">
+                        <pre><code>{
+  "path": "https://storage.googleapis.com/.../invoice.txt"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="errores" class="section">
+            <h1>Códigos de Respuesta y Errores</h1>
+            
+            <h2>Códigos HTTP</h2>
+            <div class="info-box info">
+                <p>La API utiliza códigos de estado HTTP estándar para indicar éxito o fallo de las peticiones.</p>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="background-color: var(--hover-bg); border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 12px; text-align: left;">Código</th>
+                        <th style="padding: 12px; text-align: left;">Significado</th>
+                        <th style="padding: 12px; text-align: left;">Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px;"><code>200</code></td>
+                        <td style="padding: 12px;">OK</td>
+                        <td style="padding: 12px;">Petición exitosa</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px;"><code>201</code></td>
+                        <td style="padding: 12px;">Created</td>
+                        <td style="padding: 12px;">Recurso creado exitosamente</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px;"><code>400</code></td>
+                        <td style="padding: 12px;">Bad Request</td>
+                        <td style="padding: 12px;">Parámetros inválidos o faltantes</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px;"><code>401</code></td>
+                        <td style="padding: 12px;">Unauthorized</td>
+                        <td style="padding: 12px;">Autenticación inválida o token expirado</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px;"><code>404</code></td>
+                        <td style="padding: 12px;">Not Found</td>
+                        <td style="padding: 12px;">Recurso no encontrado</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px;"><code>422</code></td>
+                        <td style="padding: 12px;">Unprocessable Entity</td>
+                        <td style="padding: 12px;">Error de validación o procesamiento</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px;"><code>500</code></td>
+                        <td style="padding: 12px;">Internal Server Error</td>
+                        <td style="padding: 12px;">Error interno del servidor</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Formato de Errores</h2>
+            <p>Los errores se devuelven en formato JSON con la siguiente estructura:</p>
+            <div class="code-block">
+                <pre><code>{
+  "error": {
+    "message": "Descripción del error",
+    "code": "ERROR_CODE",
+    "details": {
+      "field": "campo_con_error",
+      "reason": "explicación específica"
+    }
+  }
+}</code></pre>
+            </div>
+
+            <h2>Errores Comunes</h2>
+
+            <div class="info-box danger">
+                <h4>Token Expirado</h4>
+                <div class="code-block">
+                    <pre><code>{
+  "error": {
+    "message": "Token has expired",
+    "code": "TOKEN_EXPIRED"
+  }
+}</code></pre>
+                </div>
+                <p><strong>Solución:</strong> Renovar el access token usando el refresh token correspondiente.</p>
+            </div>
+
+            <div class="info-box danger">
+                <h4>RUC Inválido</h4>
+                <div class="code-block">
+                    <pre><code>{
+  "error": {
+    "message": "RUC inválido detectado (0-0-0)",
+    "code": "INVALID_RUC"
+  }
+}</code></pre>
+                </div>
+                <p><strong>Solución:</strong> Verificar que el cliente tenga un RUC válido en la plataforma de origen.</p>
+            </div>
+
+            <div class="info-box danger">
+                <h4>Factura Ya Emitida</h4>
+                <div class="code-block">
+                    <pre><code>{
+  "skipped": true,
+  "reason": "already_emitted",
+  "cufe": "FE01234567890...",
+  "message": "Factura ya fue emitida al PAC"
+}</code></pre>
+                </div>
+                <p><strong>Solución:</strong> La factura ya tiene CUFE, no se puede reemitir. Este no es un error, es un estado informativo.</p>
+            </div>
+
+            <div class="info-box warning">
+                <h4>Rate Limit</h4>
+                <p>Si se excede el límite de peticiones, se recibirá un error 429. El sistema implementa reintentos automáticos con backoff exponencial.</p>
+            </div>
+
+            <h2>Respuestas Exitosas</h2>
+
+            <h3>Factura Emitida</h3>
+            <div class="code-block">
+                <pre><code>{
+  "success": true,
+  "cufe": "FE0123456789012345678901234567890123456789012345",
+  "transactionId": "abc123def456",
+  "docNumber": "001-001-00001234",
+  "pdfUrl": "https://api.pac.com/pdf/...",
+  "xmlUrl": "https://api.pac.com/xml/..."
+}</code></pre>
+            </div>
+
+            <h3>Lista de Facturas</h3>
+            <div class="code-block">
+                <pre><code>{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "id": "123",
+      "docNumber": "001-001-00001234",
+      "customer": {...},
+      "total": 150.00,
+      "cufe": "FE01234567..."
+    }
+  ],
+  "page_context": {
+    "page": 1,
+    "per_page": 10,
+    "has_more_page": true
+  }
+}</code></pre>
+            </div>
+
+            <h2>Reintentos y Recuperación</h2>
+            <div class="info-box info">
+                <h4>Sistema de Reintentos</h4>
+                <p>La API implementa reintentos automáticos para operaciones críticas:</p>
+                <ul>
+                    <li><strong>Facturas:</strong> Hasta 8 intentos con backoff exponencial</li>
+                    <li><strong>Webhooks:</strong> Hasta 5 intentos con delays incrementales</li>
+                    <li><strong>Tokens:</strong> Renovación automática en errores 401</li>
+                    <li><strong>Rate Limits:</strong> Espera inteligente según tipo de error</li>
+                </ul>
             </div>
         </section>
     </main>
