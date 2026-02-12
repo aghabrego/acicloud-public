@@ -25,6 +25,7 @@
                 <a href="#quickbooks">QuickBooks</a>
                 <ul class="submenu">
                     <li><a href="#qb-auth">Autorización</a></li>
+                    <li><a href="#qb-clientes">Configuración de Clientes</a></li>
                     <li><a href="#qb-invoices">Facturas</a></li>
                     <li><a href="#qb-webhooks">Webhooks</a></li>
                     <li><a href="#qb-maintenance">Mantenimiento</a></li>
@@ -479,6 +480,321 @@ Recomendaciones:
                         <li><code>sid</code> - ID de la conexión</li>
                     </ul>
                 </div>
+            </div>
+
+            <h2 id="qb-clientes">Configuración de Clientes</h2>
+            
+            <div class="info-box warning">
+                <h3>Campos Requeridos para Facturación Electrónica</h3>
+                <p>Para la facturación electrónica panameña, es necesario configurar correctamente los datos RUC/DV en los clientes de QuickBooks. El sistema ACIv2 extrae automáticamente esta información de campos específicos.</p>
+            </div>
+
+            <h3>Campos Utilizados por ACIv2</h3>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>1. PrimaryTaxIdentifier (Campo Principal)</h4>
+                    <p><strong>Ubicación en QuickBooks:</strong> Customer → Tax Info → Business ID No.</p>
+                    <p>Este es el campo oficial de QuickBooks para identificación tributaria. Tiene <strong>prioridad 1</strong> en la extracción de datos.</p>
+                    
+                    <h4>2. AlternatePhone.FreeFormNumber (Campo Alternativo)</h4>
+                    <p><strong>Ubicación en QuickBooks:</strong> Customer → Phone → Other Phone</p>
+                    <p>Campo de fallback con <strong>prioridad 2</strong>. Se usa si PrimaryTaxIdentifier está vacío o no tiene formato válido.</p>
+                </div>
+            </div>
+
+            <h3>Tipos de Receptor</h3>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Código</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tipo Receptor</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Descripción</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Uso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>01</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Contribuyente</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Cliente con RUC válido</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Empresas o personas registradas en DGI</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>02</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Consumidor Final</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Sin RUC o cliente genérico</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Personas sin registro tributario</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>03</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Gobierno</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Entidades gubernamentales</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Instituciones públicas de Panamá</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>04</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Extranjero</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Identificación no panameña</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Pasaporte o ID extranjera</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Tipos de Contribuyente</h3>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="background-color: var(--bg-secondary); text-align: left;">
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Código</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Tipo</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Ejemplo RUC</th>
+                                <th style="padding: 0.75rem; border: 1px solid var(--border-color);">Formato en QB</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>1</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Persona Natural</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">9-734-1672</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><code>XXXX9-734-1672 DV:56</code></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><strong>2</strong></td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">Persona Jurídica</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);">1825706-1-709732</td>
+                                <td style="padding: 0.75rem; border: 1px solid var(--border-color);"><code>XXXX:1825706-1-709732 DV:90</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="info-box info">
+                        <p><strong>Nota:</strong> El prefijo <code>XXXX</code> (sin dos puntos) indica Persona Natural. El prefijo <code>XXXX:</code> (con dos puntos) indica Persona Jurídica.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Formatos Soportados en PrimaryTaxIdentifier</h3>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>1. Persona Natural - Formato Estándar</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>XXXX9-734-1672 DV:56
+XXXX8-123-4567 DV:12
+XXXX1-234-5678 DV:34</code></pre>
+                    </div>
+                    <p><strong>Patrón:</strong> <code>XXXX[provincia]-[tomo]-[asiento] DV:[dv]</code></p>
+                    <ul>
+                        <li>Provincia: 1-13 o E/N/PE (1 o 2 caracteres)</li>
+                        <li>DV puede escribirse con o sin dos puntos: <code>DV:56</code> o <code>DV56</code></li>
+                    </ul>
+
+                    <h4>2. Persona Natural - Con Prefijos Especiales (NT, AV, PI, etc.)</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>XXXX13-NT-2-727784 DV:49
+XXXX8-AV-1-123456 DV:34
+XXXX7-PI-3-654321 DV:78</code></pre>
+                    </div>
+                    <p><strong>Patrón 4 segmentos:</strong> <code>XXXX[provincia]-[prefijo]-[grupo]-[numero] DV:[dv]</code></p>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>XXXX13-NT-727784 DV:49
+XXXX8-AV-123456 DV:34</code></pre>
+                    </div>
+                    <p><strong>Patrón 3 segmentos:</strong> <code>XXXX[provincia]-[prefijo]-[numero] DV:[dv]</code></p>
+
+                    <h4>3. Persona Natural - Con Provincias Especiales</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>XXXE-1234-12345 DV:23
+XXXPE-5678-91011 DV:45
+XXXN-9876-54321 DV:67</code></pre>
+                    </div>
+                    <p><strong>Provincias especiales:</strong></p>
+                    <ul>
+                        <li><code>E</code> - Extranjero naturalizado</li>
+                        <li><code>PE</code> - Provincia especial</li>
+                        <li><code>N</code> - Provincia N</li>
+                    </ul>
+
+                    <h4>4. Persona Jurídica (Empresa)</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>XXXX:1825706-1-709732 DV:90
+XXXX:1234567-1-123456 DV:45
+XXXX:9876543-2-654321 DV:78</code></pre>
+                    </div>
+                    <p><strong>Importante:</strong> El prefijo <code>XXXX:</code> (con dos puntos) es obligatorio para Persona Jurídica.</p>
+                    <p><strong>Patrón:</strong> <code>XXXX:[numero]-[digito]-[correlativo] DV:[dv]</code></p>
+
+                    <h4>5. Extranjero con Pasaporte</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>XXXXPORTE:XYZABC123
+XXXXPORTE:ABC123XYZ
+XXXXPORTE:N1234567890</code></pre>
+                    </div>
+                    <p><strong>Patrón:</strong> <code>XXXXPORTE:[numero_pasaporte]</code></p>
+                    <p>Tipo Receptor automático: <strong>04 - Extranjero</strong></p>
+
+                    <h4>6. Formato con TIPO y TIPO_RECEPTOR Explícitos (Opcional)</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>XXXX9-734-1672 DV:56 TIPO:1 TIPO_RECEPTOR:01
+XXXX:1825706-1-709732 DV:90 TIPO:2 TIPO_RECEPTOR:01
+XXXX13-NT-2-727784 DV:49 TIPO:1 TIPO_RECEPTOR:03</code></pre>
+                    </div>
+                    <p>Estos campos son opcionales y permiten especificar explícitamente:</p>
+                    <ul>
+                        <li><code>TIPO:1</code> - Persona Natural</li>
+                        <li><code>TIPO:2</code> - Persona Jurídica</li>
+                        <li><code>TIPO_RECEPTOR:01</code> - Contribuyente</li>
+                        <li><code>TIPO_RECEPTOR:02</code> - Consumidor Final</li>
+                        <li><code>TIPO_RECEPTOR:03</code> - Gobierno</li>
+                        <li><code>TIPO_RECEPTOR:04</code> - Extranjero</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Formatos Soportados en AlternatePhone (Fallback)</h3>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <p>Si <code>PrimaryTaxIdentifier</code> está vacío, el sistema intentará extraer RUC/DV del campo <code>AlternatePhone.FreeFormNumber</code> (Other Phone).</p>
+                    
+                    <h4>Formatos Aceptados</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                        <pre><code>// Formato estándar
+9-734-1672 56
+1825706-1-709732 DV90
+8-123-4567 12
+
+// Con DV explícito
+9-734-1672 DV:56
+1825706-1-709732 DV:90
+
+// Cualquier formato con guiones
+123-45-67890 12
+E-1234-12345 23
+PE-5678-91011 45</code></pre>
+                    </div>
+                    <div class="info-box warning">
+                        <p><strong>Nota:</strong> En AlternatePhone no se distingue automáticamente entre Natural/Jurídica. El sistema analiza el RUC para determinarlo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Ejemplos de Configuración</h3>
+
+            <div class="endpoint">
+                <div class="endpoint-body">
+                    <h4>Ejemplo 1: Cliente Persona Natural</h4>
+                    <div class="code-block">
+                        <pre><code>DisplayName: "JEAN CARLOS NARVAEZ"
+GivenName: "Jean Carlos"
+FamilyName: "Narvaez"
+PrimaryTaxIdentifier: "XXXX9-734-1672 DV:56"
+
+Resultado:
+- RUC: 9-734-1672
+- DV: 56
+- TIPO: 1 (Persona Natural)
+- TIPO_RECEPTOR: 01 (Contribuyente)</code></pre>
+                    </div>
+
+                    <h4>Ejemplo 2: Cliente Persona Jurídica (Empresa)</h4>
+                    <div class="code-block">
+                        <pre><code>DisplayName: "EMPRESA XYZ S.A."
+CompanyName: "EMPRESA XYZ S.A."
+PrimaryTaxIdentifier: "XXXX:1825706-1-709732 DV:90"
+
+Resultado:
+- RUC: 1825706-1-709732
+- DV: 90
+- TIPO: 2 (Persona Jurídica)
+- TIPO_RECEPTOR: 01 (Contribuyente)</code></pre>
+                    </div>
+
+                    <h4>Ejemplo 3: Cliente con Prefijo Especial NT</h4>
+                    <div class="code-block">
+                        <pre><code>DisplayName: "GERALDINE JIMENEZ"
+GivenName: "GERALDINE"
+MiddleName: "DAILETH MANZANILLA"
+FamilyName: "JIMENEZ"
+PrimaryTaxIdentifier: "XXXX13-NT-2-727784 DV:49"
+
+Resultado:
+- RUC: 13-NT-2-727784
+- DV: 49
+- TIPO: 1 (Persona Natural)
+- TIPO_RECEPTOR: 01 (Contribuyente)</code></pre>
+                    </div>
+
+                    <h4>Ejemplo 4: Cliente Extranjero con Pasaporte</h4>
+                    <div class="code-block">
+                        <pre><code>DisplayName: "JOHN DOE"
+GivenName: "John"
+FamilyName: "Doe"
+PrimaryTaxIdentifier: "XXXXPORTE:N1234567890"
+
+Resultado:
+- PASAPORTE: N1234567890
+- RUC: null
+- DV: null
+- TIPO: null
+- TIPO_RECEPTOR: 04 (Extranjero)</code></pre>
+                    </div>
+
+                    <h4>Ejemplo 5: Cliente sin RUC (Consumidor Final)</h4>
+                    <div class="code-block">
+                        <pre><code>DisplayName: "CLIENTE GENERICO"
+PrimaryTaxIdentifier: ""
+AlternatePhone: null
+
+Resultado:
+- RUC: null
+- DV: null
+- TIPO: null
+- TIPO_RECEPTOR: 02 (Consumidor Final)</code></pre>
+                    </div>
+
+                    <h4>Ejemplo 6: Usando AlternatePhone como Fallback</h4>
+                    <div class="code-block">
+                        <pre><code>DisplayName: "MARIA GONZALEZ"
+PrimaryTaxIdentifier: ""  // Vacío
+AlternatePhone.FreeFormNumber: "8-456-7890 45"
+
+Resultado:
+- RUC: 8-456-7890
+- DV: 45
+- TIPO: 1 (Persona Natural)
+- TIPO_RECEPTOR: 01 (Contribuyente)
+- Source: AlternatePhone_Short</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box danger">
+                <h3>Notas Importantes</h3>
+                <ul>
+                    <li><strong>Campo Obligatorio en QB:</strong> <code>DisplayName</code> debe ser único en QuickBooks</li>
+                    <li><strong>Prioridad de Extracción:</strong> PrimaryTaxIdentifier (1°) → AlternatePhone (2°) → Consumidor Final</li>
+                    <li><strong>Prefijo XXXX:</strong> Con dos puntos = Jurídica, sin dos puntos = Natural</li>
+                    <li><strong>DV Flexible:</strong> Puede escribirse como <code>DV:56</code> o <code>DV56</code></li>
+                    <li><strong>Case Insensitive:</strong> Los patrones no distinguen mayúsculas/minúsculas</li>
+                    <li><strong>Validación Automática:</strong> El sistema valida la estructura del RUC y determina el tipo automáticamente</li>
+                    <li><strong>Gobierno (Tipo 03):</strong> Debe especificarse explícitamente con <code>TIPO_RECEPTOR:03</code></li>
+                </ul>
             </div>
 
             <h2 id="qb-invoices">Facturas</h2>
